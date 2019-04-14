@@ -1,6 +1,6 @@
 ---
 title: "SDS/CSC 293 Mini-Project 4: CART"
-author: "Group XX: WRITE YOUR NAMES HERE"
+author: "Mariama Jaiteh, Karen Santamaria"
 date: "Wednesday, April 17^th^, 2019"
 output:
   html_document:
