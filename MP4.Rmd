@@ -110,10 +110,18 @@ ggplot(data = training,
 **Numerical predictors**: Create a visualization of the relationship of all four numerical predictor variables at once (`bone_length`, `rotting_flesh`, `hair_length`, `has_soul`) using the `ggpairs()` function from the `GGally` [package](http://ggobi.github.io/ggally/#ggallyggpairs). 
 
 ```{r}
-
+ggpairs(training, columns = c("bone_length", "rotting_flesh", "hair_length", "has_soul"))
 ```
 
-**Relationship of categorical predictor and outcome variable**: Create a visualization of the relationship between the categorical outcome variable `type` and any predictor varible of your choosing.
+**Relationship of categorical predictor and outcome variable**: Create a visualization of the relationship between the categorical outcome variable `type` and any predictor variable of your choosing.
+
+
+```{r}
+ggplot(data = training, 
+       aes(x = type, y = hair_length)) +
+  geom_boxplot()
+
+```
 
 
 
