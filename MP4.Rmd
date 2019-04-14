@@ -11,6 +11,8 @@ output:
     toc_float:
       collapsed: true
     df_print: kable
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -88,14 +90,18 @@ Perform the following exploratory data analyses:
 **Categorical predictor**: Create a visualization of the categorical predictor variable `color`.
 
 ```{r}
-
+ggplot(data = training, 
+       aes(x = color)) +
+  geom_bar()
 ```
 
 
 **Outcome variable**: Create a visualization of the categorical predictor variable `type`.
 
 ```{r}
-
+ggplot(data = training, 
+       aes(x = type)) +
+  geom_bar()
 ```
 
 
