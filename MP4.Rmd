@@ -1,0 +1,174 @@
+---
+title: "SDS/CSC 293 Mini-Project 4: CART"
+author: "Group XX: WRITE YOUR NAMES HERE"
+date: "Wednesday, April 17^th^, 2019"
+output:
+  html_document:
+    highlight: tango
+    theme: cosmo
+    toc: yes
+    toc_depth: 2
+    toc_float:
+      collapsed: true
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+# Load all your packages here:
+library(tidyverse)
+library(GGally)
+library(rpart)
+
+# Set default behavior for all code chunks here:
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE,
+  fig.width = 16/2, fig.height = 9/2
+)
+
+# Set seed value of random number generator here. This is in order to get
+# "replicable" randomness, so that any results based on random sampling or
+# resampling are replicable everytime you knit this file. Why use a seed value
+# of 76? For no other reason than 76 is one of my favorite numbers:
+# https://www.youtube.com/watch?v=xjJ7FheCkCU
+set.seed(76)
+```
+
+You will be fitting CART models to the data from the [Ghouls, Goblins, and Ghosts... Boo!](https://www.kaggle.com/c/ghouls-goblins-and-ghosts-boo/){target="_blank"} Kaggle competition. The competition's score for leaderboard purposes is the "Categorization Accuracy". However you will **NOT** be making any submissions to Kaggle.
+
+
+
+***
+
+
+
+# Load data
+
+Read in data provided by Kaggle for this competition. They are organized in the `data/` folder of this RStudio project:
+
+```{r}
+training <- read_csv("data/train.csv")
+test <- read_csv("data/test.csv")
+sample_submission <- read_csv("data/sample_submission.csv")
+```
+
+
+## Look at your data!
+
+Always, ALWAYS, **ALWAYS** start by looking at your raw data. This gives you visual sense of what information you have to help build your predictive models. To get a full description of each variable, read the data dictionary in the `data_description.txt` file in the `data/` folder.
+
+Note that the following code chunk has `eval = FALSE` meaning "don't evaluate this chunk with knitting" because `.Rmd` files won't knit if they include a `View()`:
+
+```{r, eval = FALSE}
+View(training)
+glimpse(training)
+
+View(test)
+glimpse(test)
+```
+
+In particular, pay close attention to the variables and variable types in the
+`sample_submission.csv`. Your submission must match this exactly.
+
+```{r}
+glimpse(sample_submission)
+```
+
+
+
+***
+
+
+
+# Minimally viable product
+
+Perform the following exploratory data analyses:
+
+## Univariate explorations
+
+**Categorical predictor**: Create a visualization of the categorical predictor variable `color`.
+
+```{r}
+
+```
+
+
+**Outcome variable**: Create a visualization of the categorical predictor variable `type`.
+
+```{r}
+
+```
+
+
+## Mutlivariate explorations
+
+**Numerical predictors**: Create a visualization of the relationship of all four numerical predictor variables at once (`bone_length`, `rotting_flesh`, `hair_length`, `has_soul`) using the `ggpairs()` function from the `GGally` [package](http://ggobi.github.io/ggally/#ggallyggpairs). 
+
+```{r}
+
+```
+
+**Relationship of categorical predictor and outcome variable**: Create a visualization of the relationship between the categorical outcome variable `type` and any predictor varible of your choosing.
+
+
+
+***
+
+
+
+# Due diligence
+
+1. Fit a CART where:
+    * You use only the numerical predictors.
+    * The maximum depth of the tree is 5.
+    * You use the default "complexity parameter" 
+1. Plot the tree.
+1. Make predictions `type_hat` on the `training` data. Hint compare the output of `predict(model_CART, type = "prob")` and `predict(model_CART, type = "class")`.
+1. Compute the "classification accuracy".
+
+```{r, fig.height = 9, fig.width=16}
+
+```
+
+
+
+
+***
+
+
+
+# Reaching for the stars
+
+Note that the $\alpha$ complexity parameter is the `cp` argument to `rpart.control()`.
+
+1. Reusing the MP1 solutions code, for the range of `alpha` complexity parameters in the `alpha_df` data frame, return an estimate of the accuracy/error that Kaggle would return.
+1. Plot the relationship between the alpha complexity parameter and accuracy.
+1. Using the optimal $\alpha^*$ complexity parameter, write a `submission.csv` suitable for submission to Kaggle.
+
+```{r}
+alpha_df <- tibble(
+  alpha = seq(from = 0, to = 0.05, length = 100),
+  accuracy = 0
+)
+set.seed(76)
+
+```
+
+
+
+
+
+
+***
+
+
+
+# Point of diminishing returns
+
+* Use one-hot-enconding to fit a predictive CART model using the categorical variable `color` and plot the tree. Set the maximum depth of the tree to 5 and use the default "complexity parameter".
+* No need to generate an estimate of the accuracy that Kaggle would return. 
+
+![](one_hot_encoding.png)
+
+
+
+
