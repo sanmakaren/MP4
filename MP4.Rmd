@@ -184,6 +184,34 @@ alpha_df <- tibble(
 )
 set.seed(76)
 
+training <- training %>%
+  sample_frac(1) %>%
+  mutate(fold = rep(1:5, length=n())) %>%
+  arrange(fold)
+
+for (i in 1:nrow(alpha_df)){
+  
+  alpha <- alpha_df$alpha[i]
+  
+  ALPHA <- rep(0,5)
+  
+  for(j in 1:5){
+    pretend_training <- training %>%
+      filter(fold != j)
+    pretend_test <- training %>%
+      filter (fold == j)
+    
+    model_1_formula <- as.formula(type~bone_length + rotting_flesh + hair_length + has_soul)
+    tree_parameter <- rpart.control(maxdepth = 5)
+    model_1_CART <- rpart(model_1_formula, data = pretend_training, control = tree_parameter)
+    
+    
+    
+  
+  }
+  
+  
+}
 ```
 
 
