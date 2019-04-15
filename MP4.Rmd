@@ -140,10 +140,29 @@ ggplot(data = training,
 1. Compute the "classification accuracy".
 
 ```{r, fig.height = 9, fig.width=16}
+model_1_formula <- as.formula(type~bone_length + rotting_flesh + hair_length + has_soul)
+tree_parameter <- rpart.control(maxdepth = 5)
+model_1_CART <- rpart(model_1_formula, data = training, control = tree_parameter)
 
+plot(model_1_CART)
+text(model_1_CART, use.n = TRUE)
+title("Predicting monster type with bone length, rotting flesh, hair length and soul")
+box()
 ```
 
+```{r}
+p_hat_matrix_train <- model_1_CART %>%
+  predict(type = "class", newdata = training) %>%
+  enframe()
 
+training <- training %>%
+  mutate(type_hat = p_hat_matrix_train$value)
+```
+
+```{r}
+accuracy = sum(training$type == training$type_hat) / nrow(training)
+accuracy
+```
 
 
 ***
