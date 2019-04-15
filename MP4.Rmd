@@ -183,7 +183,7 @@ alpha_df <- tibble(
   accuracy = 0
 )
 set.seed(76)
-
+#5 Fold Cross Validation
 training <- training %>%
   sample_frac(1) %>%
   mutate(fold = rep(1:5, length=n())) %>%
@@ -192,29 +192,45 @@ training <- training %>%
 for (i in 1:nrow(alpha_df)){
   
   alpha <- alpha_df$alpha[i]
-  
   ALPHA <- rep(0,5)
-  
   for(j in 1:5){
     pretend_training <- training %>%
       filter(fold != j)
     pretend_test <- training %>%
       filter (fold == j)
     
+    #Fitting the Model + Training Model
     model_1_formula <- as.formula(type~bone_length + rotting_flesh + hair_length + has_soul)
-    tree_parameter <- rpart.control(maxdepth = 5)
+    tree_parameter <- rpart.control(maxdepth = 5, cp = alpha)
     model_1_CART <- rpart(model_1_formula, data = pretend_training, control = tree_parameter)
     
+    #Prediction based on model
+    p_hat_matrix_train <- model_1_CART %>%
+    predict(type = "class", newdata = pretend_test) %>%
+    enframe()
     
+    pretend_test <- pretend_test %>%
+    mutate(type_hat = p_hat_matrix_train$value)
     
+    accuracy = sum(pretend_test$type == pretend_test$type_hat) / nrow(pretend_test)
+    
+    ALPHA[j] <- accuracy
   
   }
   
+  alpha_df$accuracy[i] <- mean(ALPHA)
   
 }
 ```
 
 
+```{r}
+#Plotting the relationship between alpha complexity parameter and accuracy
+ggplot(alpha_df, aes(x = alpha, y = accuracy)) + 
+  geom_line()+
+  labs(title = "Relationship between the alpha complexity parameter and accuracy")
+
+```
 
 
 
@@ -230,6 +246,9 @@ for (i in 1:nrow(alpha_df)){
 
 ![](one_hot_encoding.png)
 
+```{r}
+
+```
 
 
 
