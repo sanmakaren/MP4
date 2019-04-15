@@ -233,7 +233,29 @@ ggplot(alpha_df, aes(x = alpha, y = accuracy)) +
 ```
 
 
+```{r}
+#Which alpha value yields highest accuracy
+alpha_df[which.max(alpha_df$accuracy),]
+```
 
+```{r}
+model_2_formula <- as.formula(type~bone_length + rotting_flesh + hair_length + has_soul)
+tree_parameter <- rpart.control(maxdepth = 5, cp = 0.00556)
+model_2_CART <- rpart(model_1_formula, data = training, control = tree_parameter)
+
+```
+
+```{r}
+ #Prediction based on model
+ p_hat_matrix_train1 <- model_2_CART %>%
+  predict(type = "class", newdata = test) %>%
+    enframe()
+    
+test <- test %>%
+  mutate(type_hat = p_hat_matrix_train$value)
+
+    
+```
 
 ***
 
