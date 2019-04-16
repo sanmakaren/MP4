@@ -71,9 +71,6 @@ glimpse(test)
 In particular, pay close attention to the variables and variable types in the
 `sample_submission.csv`. Your submission must match this exactly.
 
-```{r}
-glimpse(sample_submission)
-```
 
 
 
@@ -92,17 +89,30 @@ Perform the following exploratory data analyses:
 ```{r}
 ggplot(data = training, 
        aes(x = color)) +
-  geom_bar()
+  geom_bar() + 
+  ggtitle("Count of Monsters by Color")
 ```
 
+
+```{r}
+ggplot(data = training, 
+       aes(x = color, fill = as.factor(type))) +
+  geom_bar() + 
+  ggtitle("Count monsters by Color and Type") +
+  labs(fill = "Monster Type")
+```
 
 **Outcome variable**: Create a visualization of the categorical predictor variable `type`.
 
 ```{r}
 ggplot(data = training, 
        aes(x = type)) +
-  geom_bar()
+  geom_bar() + 
+  ggtitle ("Counts of Monsters by type")
 ```
+
+
+
 
 
 ## Mutlivariate explorations
@@ -119,7 +129,9 @@ ggpairs(training, columns = c("bone_length", "rotting_flesh", "hair_length", "ha
 ```{r}
 ggplot(data = training, 
        aes(x = type, y = hair_length)) +
-  geom_boxplot()
+  geom_boxplot() +
+  ggtitle("Type of Monster and Hair Length")
+
 
 ```
 
@@ -151,12 +163,12 @@ box()
 ```
 
 ```{r}
-p_hat_matrix_train <- model_1_CART %>%
+predict_train <- model_1_CART %>%
   predict(type = "class", newdata = training) %>%
   enframe()
 
 training <- training %>%
-  mutate(type_hat = p_hat_matrix_train$value)
+  mutate(type_hat = predict_train$value)
 ```
 
 ```{r}
@@ -182,7 +194,7 @@ alpha_df <- tibble(
   alpha = seq(from = 0, to = 0.05, length = 100),
   accuracy = 0
 )
-set.seed(76)
+
 #5 Fold Cross Validation
 training <- training %>%
   sample_frac(1) %>%
@@ -193,6 +205,7 @@ for (i in 1:nrow(alpha_df)){
   
   alpha <- alpha_df$alpha[i]
   ALPHA <- rep(0,5)
+  
   for(j in 1:5){
     pretend_training <- training %>%
       filter(fold != j)
@@ -200,17 +213,16 @@ for (i in 1:nrow(alpha_df)){
       filter (fold == j)
     
     #Fitting the Model + Training Model
-    model_1_formula <- as.formula(type~bone_length + rotting_flesh + hair_length + has_soul)
     tree_parameter <- rpart.control(maxdepth = 5, cp = alpha)
     model_1_CART <- rpart(model_1_formula, data = pretend_training, control = tree_parameter)
     
     #Prediction based on model
-    p_hat_matrix_train <- model_1_CART %>%
+    predict_pretend_test <- model_1_CART %>%
     predict(type = "class", newdata = pretend_test) %>%
     enframe()
     
     pretend_test <- pretend_test %>%
-    mutate(type_hat = p_hat_matrix_train$value)
+      mutate(type_hat = predict_pretend_test$value)
     
     accuracy = sum(pretend_test$type == pretend_test$type_hat) / nrow(pretend_test)
     
@@ -235,27 +247,33 @@ ggplot(alpha_df, aes(x = alpha, y = accuracy)) +
 
 ```{r}
 #Which alpha value yields highest accuracy
-alpha_df[which.max(alpha_df$accuracy),]
+best_alpha_df <- alpha_df[which.max(alpha_df$accuracy),]
+best_alpha = best_alpha_df$alpha
 ```
 
 ```{r}
 model_2_formula <- as.formula(type~bone_length + rotting_flesh + hair_length + has_soul)
-tree_parameter <- rpart.control(maxdepth = 5, cp = 0.00556)
+tree_parameter <- rpart.control(maxdepth = 5, cp = best_alpha)
 model_2_CART <- rpart(model_1_formula, data = training, control = tree_parameter)
-
 ```
 
 ```{r}
  #Prediction based on model
- p_hat_matrix_train1 <- model_2_CART %>%
+ predict_test <- model_2_CART %>%
   predict(type = "class", newdata = test) %>%
     enframe()
     
 test <- test %>%
-  mutate(type_hat = p_hat_matrix_train$value)
-
-    
+  mutate(type = predict_test$value)
 ```
+
+```{r}
+submission <- test %>%
+  select(id, type)
+
+write.csv(submission, file = "data/submission")
+```
+
 
 ***
 
@@ -269,7 +287,22 @@ test <- test %>%
 ![](one_hot_encoding.png)
 
 ```{r}
+library(onehot)
+training2 <- onehot(training, stringsAsFactors = TRUE)
 
+training <- training %>%
+  mutate(value = 1)  %>%
+  spread(color, value,  fill = 0 ) 
+
+model_3_formula <- as.formula(type ~ black + blood + blue + clear + green + white)    
+tree_parameter <- rpart.control(maxdepth = 5)
+
+model_3_CART <- rpart(model_3_formula, data = training, control = tree_parameter)
+
+plot(model_3_CART)
+text(model_3_CART, use.n = TRUE)
+title("Predicting monster type with color")
+box()
 ```
 
 
