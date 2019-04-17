@@ -299,10 +299,13 @@ tree_parameter <- rpart.control(maxdepth = 5)
 
 model_3_CART <- rpart(model_3_formula, data = training, control = tree_parameter)
 
+```
+
+```{r}
 plot(model_3_CART)
 text(model_3_CART, use.n = TRUE)
 title("Predicting monster type with color")
-box()
+
 ```
 
 
