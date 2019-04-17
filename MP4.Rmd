@@ -249,6 +249,7 @@ ggplot(alpha_df, aes(x = alpha, y = accuracy)) +
 #Which alpha value yields highest accuracy
 best_alpha_df <- alpha_df[which.max(alpha_df$accuracy),]
 best_alpha = best_alpha_df$alpha
+best_alpha
 ```
 
 ```{r}
@@ -301,11 +302,11 @@ model_3_CART <- rpart(model_3_formula, data = training, control = tree_parameter
 
 ```
 
-```{r}
+```{r,fig.height = 9, fig.width=16}
 plot(model_3_CART)
 text(model_3_CART, use.n = TRUE)
 title("Predicting monster type with color")
-
+box()
 ```
 
 
